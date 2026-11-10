@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#090e17">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="LocalVault">
+  <meta name="application-name" content="LocalVault">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>LocalVault Mobile</title>
+  <link rel="manifest" href="/mobile/manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="/mobile/icons/icon_192.png">
+  <link rel="apple-touch-icon" href="/mobile/icons/icon_192.png">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background-color: #090e17;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      user-select: none;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(180deg, #121c2d 0%, #0d1522 100%);
+      border-bottom: 1px solid #1a2638;
+      padding: env(safe-area-inset-top, 12px) 16px 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; }
+    .brand img { width: 26px; height: 26px; }
+    .brand-title { font-size: 17px; font-weight: 700; color: #f8fafc; }
+    .sync-btn {
+      background: #142031;
+      border: 1px solid #23344d;
+      color: #38bdf8;
+      border-radius: 16px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Search Bar */
+    .search-container {
+      padding: 10px 16px;
+      background: #0b111c;
+      border-bottom: 1px solid #162030;
+    }
+    .search-input {
+      width: 100%;
+      background: #141f30;
+      border: 1px solid #23344d;
+      border-radius: 18px;
+      padding: 8px 16px;
+      color: #ffffff;
+      font-size: 13px;
+      outline: none;
+    }
+    .search-input:focus { border-color: #0572ec; background: #18273d; }
+
+    /* Category Filter Pills */
+    .category-pills {
+      display: flex;
+      gap: 8px;
+      padding: 8px 16px;
+      overflow-x: auto;
+      background: #090e17;
+      scrollbar-width: none;
+    }
+    .category-pills::-webkit-scrollbar { display: none; }
+    .pill {
+      background: #131e2e;
+      border: 1px solid #1e2c40;
+      border-radius: 14px;
+      padding: 5px 12px;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .pill.active {
+      background: #0572ec;
+      border-color: #0572ec;
+      color: #ffffff;
+    }
+
+    /* Item List */
+    .list-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .item-card {
+      background: linear-gradient(180deg, #142031 0%, #101928 100%);
+      border: 1px solid #1c2a3f;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .item-title { font-weight: 600; font-size: 15px; color: #f8fafc; }
+    .item-badge {
+      font-size: 10px;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .item-user { font-size: 13px; color: #94a3b8; }
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .btn-action {
+      flex: 1;
+      background: #172438;
+      border: 1px solid #24354c;
+      border-radius: 6px;
+      color: #cbd5e1;
+      padding: 8px 0;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+    }
+    .btn-action:active { background: #0572ec; color: #fff; }
+
+    /* Generator Modal / Bottom Sheet */
+    .bottom-sheet {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: #101927;
+      border-top: 1px solid #23344d;
+      border-radius: 16px 16px 0 0;
+      padding: 20px 16px env(safe-area-inset-bottom, 20px) 16px;
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+      z-index: 100;
+    }
+    .bottom-sheet.open { transform: translateY(0); }
+    .sheet-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: #f8fafc; }
+    .gen-result {
+      background: #090e17;
+      border: 1px solid #1f2f45;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 15px;
+      color: #38bdf8;
+      word-break: break-all;
+      margin-bottom: 12px;
+    }
+
+    /* Bottom Nav Bar */
+    .bottom-nav {
+      background: #090e17;
+      border-top: 1px solid #162030;
+      padding: 8px 0 env(safe-area-inset-bottom, 8px) 0;
+      display: flex;
+      justify-content: space-around;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .nav-item.active { color: #38bdf8; }
+    .nav-icon { font-size: 18px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0572ec;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <img src="/mobile/icons/icon_128.png" alt="Logo">
+      <span class="brand-title">LocalVault</span>
+    </div>
+    <button id="syncBtn" class="sync-btn">↻ Sync Wi-Fi</button>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search logins, cards, notes..." class="search-input">
+  </div>
+
+  <div class="category-pills">
+    <button class="pill active" data-cat="all">All Items</button>
+    <button class="pill" data-cat="login">Logins</button>
+    <button class="pill" data-cat="card">Cards</button>
+    <button class="pill" data-cat="note">Secure Notes</button>
+    <button class="pill" data-cat="api">API Keys</button>
+  </div>
+
+  <div id="itemsList" class="list-container">
+    <!-- Populated dynamically -->
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" id="navVault">
+      <span class="nav-icon">🛡️</span>
+      <span>Vault</span>
+    </div>
+    <div class="nav-item" id="navGenerator">
+      <span class="nav-icon">⚡</span>
+      <span>Generator</span>
+    </div>
+    <div class="nav-item" id="navSettings">
+      <span class="nav-icon">📱</span>
+      <span>Phone Info</span>
+    </div>
+  </div>
+
+  <!-- Generator Bottom Sheet -->
+  <div id="genSheet" class="bottom-sheet">
+    <div class="sheet-title">Password Generator</div>
+    <div id="genPasswordDisplay" class="gen-result">Generating...</div>
+    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+      <button id="copyGenBtn" class="btn-action" style="background: #0572ec; color: #fff;">Copy Password</button>
+      <button id="refreshGenBtn" class="btn-action">↻ New</button>
+    </div>
+    <button id="closeGenSheet" class="btn-action" style="width: 100%; border: none;">Close</button>
+  </div>
+
+  <div id="toast" class="toast">Copied to clipboard!</div>
+
+  <script>
+    // Register PWA Service Worker for Offline Execution
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/mobile/sw.js').catch(() => {});
+    }
+
+    let vaultItems = [];
+    let activeCategory = "all";
+
+    // Initial load from local device storage or live sync
+    window.addEventListener("DOMContentLoaded", () => {
+      loadCachedItems();
+      syncWithDesktop();
+      setupUI();
+    });
+
+    function setupUI() {
+      // Category pills
+      document.querySelectorAll(".pill").forEach(p => {
+        p.addEventListener("click", () => {
+          document.querySelectorAll(".pill").forEach(b => b.classList.remove("active"));
+          p.classList.add("active");
+          activeCategory = p.getAttribute("data-cat");
+          renderList();
+        });
+      });
+
+      // Search
+      document.getElementById("searchInput").addEventListener("input", renderList);
+
+      // Generator sheet
+      document.getElementById("navGenerator").addEventListener("click", () => {
+        document.getElementById("genSheet").classList.add("open");
+        generateMobilePassword();
+      });
+      document.getElementById("closeGenSheet").addEventListener("click", () => {
+        document.getElementById("genSheet").classList.remove("open");
+      });
+      document.getElementById("refreshGenBtn").addEventListener("click", generateMobilePassword);
+      document.getElementById("copyGenBtn").addEventListener("click", () => {
+        const text = document.getElementById("genPasswordDisplay").textContent;
+        copyText(text);
+      });
+
+      // Sync button
+      document.getElementById("syncBtn").addEventListener("click", syncWithDesktop);
+    }
+
+    async function syncWithDesktop() {
+      const syncBtn = document.getElementById("syncBtn");
+      syncBtn.textContent = "Syncing...";
+      try {
+        const res = await fetch("/api/items?domain=");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.items) {
+            vaultItems = data.items;
+            localStorage.setItem("lvault_mobile_cache", JSON.stringify(vaultItems));
+            syncBtn.textContent = "● Synced";
+            syncBtn.style.color = "#34d399";
+            showToast("Vault synced via Wi-Fi!");
+            renderList();
+            return;
+          }
+        }
+      } catch (err) {
+        // Offline or away from PC
+      }
+      syncBtn.textContent = "● Offline Mode";
+      syncBtn.style.color = "#94a3b8";
+      loadCachedItems();
+    }
+
+    function loadCachedItems() {
+      const cached = localStorage.getItem("lvault_mobile_cache");
+      if (cached) {
+        try {
+          vaultItems = JSON.parse(cached);
+          renderList();
+        } catch (e) {}
+      }
+    }
+
+    function renderList() {
+      const list = document.getElementById("itemsList");
+      const query = document.getElementById("searchInput").value.toLowerCase().trim();
+      list.innerHTML = "";
+
+      const filtered = vaultItems.filter(it => {
+        const title = (it.title || "").toLowerCase();
+        const user = (it.username || "").toLowerCase();
+        return title.includes(query) || user.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div style="text-align: center; color: #64748b; padding: 40px 0;">No items found. Tap Sync when near PC.</div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "item-card";
+
+        let urlsDisplay = (item.urls && item.urls.length > 0) ? item.urls[0] : "";
+        urlsDisplay = urlsDisplay.replace(/^https?:\/\//, "").replace(/^www\./, "");
+
+        card.innerHTML = `
+          <div class="item-top">
+            <span class="item-title">${escapeHtml(item.title)}</span>
+            <span class="item-badge">LOGIN</span>
+          </div>
+          <div class="item-user">${escapeHtml(item.username || urlsDisplay || "No username")}</div>
+          <div class="item-actions">
+            <button class="btn-action copy-pass-btn">Copy Password</button>
+            <button class="btn-action copy-user-btn">Copy User</button>
+          </div>
+        `;
+
+        card.querySelector(".copy-pass-btn").addEventListener("click", () => copyText(item.password));
+        card.querySelector(".copy-user-btn").addEventListener("click", () => copyText(item.username));
+        list.appendChild(card);
+      });
+    }
+
+    function copyText(text) {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Copied to clipboard!");
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    function generateMobilePassword() {
+      const charset = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*()_+";
+      let pwd = "";
+      const arr = new Uint8Array(20);
+      window.crypto.getRandomValues(arr);
+      for (let i = 0; i < 20; i++) {
+        pwd += charset[arr[i] % charset.length];
+      }
+      document.getElementById("genPasswordDisplay").textContent = pwd;
+    }
+
+    function escapeHtml(str) {
+      return (str || "").replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+  </script>
+</body>
+</html>

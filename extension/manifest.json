@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "LocalVault Password Manager",
+  "version": "1.0.0",
+  "description": "Zero-Knowledge Offline Password & Secret Manager Autofill Extension",
+  "icons": {
+    "16": "icons/icon_16.png",
+    "48": "icons/icon_48.png",
+    "128": "icons/icon_128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon_16.png",
+      "48": "icons/icon_48.png",
+      "128": "icons/icon_128.png"
+    },
+    "default_title": "LocalVault"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:28842/*",
+    "http://localhost:28842/*"
+  ],
+  "background": {
+    "service_worker": "background/service_worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/autofill.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Open LocalVault"
+    }
+  }
+}

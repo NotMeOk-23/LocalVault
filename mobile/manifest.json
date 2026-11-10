@@ -1,0 +1,38 @@
+{
+  "id": "/mobile/",
+  "name": "LocalVault Mobile",
+  "short_name": "LocalVault",
+  "description": "Zero-Knowledge Offline Password & Secret Manager",
+  "start_url": "/mobile/",
+  "scope": "/mobile/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090e17",
+  "theme_color": "#090e17",
+  "icons": [
+    {
+      "src": "/mobile/icons/icon_128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/mobile/icons/icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/mobile/icons/icon_256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/mobile/icons/icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LocalVault</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <img src="../icons/icon_48.png" alt="Logo" class="logo">
+        <span class="title">LocalVault</span>
+      </div>
+      <div class="header-actions">
+        <span id="statusBadge" class="status-badge">Checking...</span>
+        <button id="lockSessionBtn" class="lock-icon-btn" title="Lock extension session" style="display: none;">🔒</button>
+      </div>
+    </header>
+
+    <!-- Authentication Gate Screen -->
+    <section id="authScreen" class="auth-screen" style="display: none;">
+      <div class="auth-card">
+        <div class="auth-icon-wrap">
+          <span class="auth-icon">🛡️</span>
+        </div>
+        <h2 class="auth-title">Authentication Required</h2>
+        <p class="auth-subtitle">Verify your identity to autofill passwords or view credentials.</p>
+
+        <!-- Windows Hello Button -->
+        <button id="windowsHelloBtn" class="btn-windows-hello">
+          <span class="win-icon">❖</span>
+          <span>Use Windows Hello / PIN</span>
+        </button>
+
+        <div class="auth-divider">
+          <span>OR MASTER PASSWORD</span>
+        </div>
+
+        <!-- Master Password Input -->
+        <div class="auth-input-group">
+          <input type="password" id="masterPasswordInput" placeholder="Enter Master Password" class="auth-input">
+          <button id="unlockWithPassBtn" class="btn-primary" style="width: 100%; margin-top: 8px;">Unlock Extension</button>
+        </div>
+
+        <div id="authErrorMsg" class="auth-error" style="display: none;"></div>
+      </div>
+    </section>
+
+    <!-- Nav Tabs (Only active when authenticated) -->
+    <nav id="mainNav" class="nav-tabs" style="display: none;">
+      <button class="tab-btn active" data-tab="tab-logins">Logins</button>
+      <button class="tab-btn" data-tab="tab-generator">Generator</button>
+      <button class="tab-btn" data-tab="tab-search">All Items</button>
+    </nav>
+
+    <!-- Content Sections (Only active when authenticated) -->
+    <main id="mainContent" class="content" style="display: none;">
+      <!-- 1. Logins Tab -->
+      <section id="tab-logins" class="tab-content active">
+        <div class="domain-header">
+          <span class="domain-label">Current Site:</span>
+          <span id="currentDomain" class="domain-value">Detecting...</span>
+        </div>
+
+        <div id="loginsList" class="cards-list">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div id="noLoginsMessage" class="empty-state" style="display: none;">
+          <div class="empty-icon">🔍</div>
+          <p class="empty-text">No logins found for this site.</p>
+          <button id="openDesktopBtn" class="btn-secondary">Open LocalVault App</button>
+        </div>
+      </section>
+
+      <!-- 2. Generator Tab -->
+      <section id="tab-generator" class="tab-content">
+        <div class="gen-box">
+          <div id="generatedPassword" class="password-display">Generating...</div>
+          <button id="copyGenBtn" class="btn-primary" style="margin-top: 10px; width: 100%;">Copy Password</button>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Length:</span>
+            <span id="lengthValue">20</span>
+          </div>
+          <input type="range" id="lengthSlider" min="10" max="40" value="20" class="slider">
+        </div>
+
+        <button id="refreshGenBtn" class="btn-secondary" style="width: 100%; margin-top: 10px;">↻ Generate New</button>
+      </section>
+
+      <!-- 3. All Items Search Tab -->
+      <section id="tab-search" class="tab-content">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Search all vault items..." class="search-input">
+        </div>
+        <div id="searchResults" class="cards-list" style="margin-top: 10px;">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Offline Desktop Locked Overlay -->
+    <div id="lockedOverlay" class="locked-overlay" style="display: none;">
+      <div class="lock-graphic">🔒</div>
+      <h3 id="overlayTitle">Desktop App Locked</h3>
+      <p id="overlayDesc">Unlock LocalVault on your PC or start LocalVault to proceed.</p>
+      
+      <div id="offlineActions" style="width: 100%; max-width: 280px; margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+        <button id="retryConnectionBtn" class="btn-primary" style="width: 100%;">↻ Reconnect to App</button>
+        <button id="openAppGuideBtn" class="btn-secondary" style="width: 100%;">How to Connect</button>
+      </div>
+
+      <div id="offlineGuideBox" style="display: none; margin-top: 12px; background: #121c2c; border: 1px solid #1e293b; border-radius: 6px; padding: 10px; text-align: left; font-size: 11px; color: #94a3b8; line-height: 1.4;">
+        <strong style="color: #f8fafc;">To use LocalVault in your browser:</strong><br>
+        1. Open <b>LocalVault</b> on your desktop (from Desktop icon or Start menu).<br>
+        2. Unlock your vault with your Master Password.<br>
+        3. Click <b>"Reconnect to App"</b> above.<br>
+        4. The extension will sync instantly with zero cloud dependencies.
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span class="footer-text">100% Offline • Windows Hello & Zero-Knowledge</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

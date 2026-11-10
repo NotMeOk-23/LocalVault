@@ -1,0 +1,73 @@
+# ==============================================================================
+# LocalVault - Security & Credentials Ignored Files
+# CRITICAL: Never commit personal vaults, keys, or runtime secrets to git!
+# ==============================================================================
+
+# User Encrypted Vault Containers & Backups
+*.lvault
+*.lvault.bak
+*.lvault.tmp*
+vault.lvault
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Runtime Logs & Diagnostics
+logs/
+*.log
+
+# Windows System & Shortcut Artifacts
+*.lnk
+LocalVault.vbs
+
+# Python Artifacts & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller & Build artifacts
+*.manifest
+*.spec
+
+# Pytest & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local IDE & OS specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Temporary zip bundles
+*.zip
